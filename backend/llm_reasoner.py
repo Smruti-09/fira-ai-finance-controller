@@ -2,19 +2,15 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 
-# Load the secret key from the .env file
 load_dotenv(dotenv_path="../.env")
 
 class FinanceLLMReasoner:
     def __init__(self):
-        # Configure the Gemini SDK
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
             print("WARNING: GEMINI_API_KEY not found in .env file!")
         
         genai.configure(api_key=api_key)
-        
-        # We use gemini-1.5-flash because it is lightning fast for hackathons
         self.model = genai.GenerativeModel(
             model_name='gemini-3.6-flash',
             system_instruction="You are an expert AI Finance Controller. Your job is to review transaction exceptions and provide a 1-sentence plain-English explanation, followed by a 1-sentence recommended action for the finance team. Be concise and professional."
@@ -40,7 +36,6 @@ class FinanceLLMReasoner:
         
         try:
             response = self.model.generate_content(prompt)
-            # Parse the text response into a dictionary
             lines = response.text.strip().split('\n')
             
             ai_reasoning = "Could not parse reasoning."

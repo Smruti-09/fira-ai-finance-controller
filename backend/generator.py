@@ -10,14 +10,6 @@ def generate_synthetic_finance_data(total_records=500, seed=42):
     random.seed(seed)
 
     base_date = datetime(2026, 3, 1, 10, 0, 0)
-    
-    # Target distribution for 500 records (~130 exceptions, ~370 exact matches):
-    # - 370 Exact matches
-    # - 50 Amount mismatches
-    # - 35 Missing records (orphans)
-    # - 25 Date mismatches (exceeding tolerance > 3 days)
-    # - 10 Duplicates
-    # - 10 Reference variations (fuzzy text / typos)
 
     merchant_rows = []
     payment_rows = []
@@ -31,7 +23,6 @@ def generate_synthetic_finance_data(total_records=500, seed=42):
         base_amount = round(random.uniform(500.0, 50000.0), 2)
         txn_date = base_date + timedelta(minutes=random.randint(0, 1440 * 30)) # 30-day spread
 
-        # Category mapping based on 500-row volume
         if i <= 370:
             category = "EXACT_MATCH"
         elif i <= 420:

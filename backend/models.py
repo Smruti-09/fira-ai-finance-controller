@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from typing import Optional
 from enum import Enum
 
-# 1. Define the possible outcomes for a transaction
 class MatchStatus(str, Enum):
     MATCHED = "MATCHED"
     AMOUNT_MISMATCH = "AMOUNT_MISMATCH"
@@ -12,7 +11,6 @@ class MatchStatus(str, Enum):
     FUZZY_MATCHED = "FUZZY_MATCHED"
     UNRESOLVED = "UNRESOLVED"
 
-# 2. Define the exact structure of our final output
 class ReconciliationResult(BaseModel):
     order_id: str
     payment_id: Optional[str] = None

@@ -3,7 +3,6 @@ import streamlit as st
 import requests
 import pandas as pd
 
-# --- CONFIGURATION & THEMING ---
 st.set_page_config(
     page_title="FIRA | Financial Intelligence & Reconciliation Agent", 
     page_icon="💳", 
@@ -12,7 +11,6 @@ st.set_page_config(
 )
 API_URL = "http://127.0.0.1:8000"
 
-# --- STATE INITIALIZATION ---
 if "resolved_orders" not in st.session_state:
     st.session_state.resolved_orders = set()
 if "analysis_results" not in st.session_state:
@@ -20,7 +18,6 @@ if "analysis_results" not in st.session_state:
 if "remediation_alert" not in st.session_state:
     st.session_state.remediation_alert = None
 
-# --- ADVANCED CSS: CLEAN LAYOUT & FIXED HEADERS ---
 st.markdown("""
     <style>
     :root {
@@ -177,12 +174,9 @@ header_col1, header_col2 = st.columns([5, 2])
 with header_col1:
     st.markdown('<div class="main-header">FIRA</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header-caption">Financial Intelligence & Reconciliation Agent</div>', unsafe_allow_html=True)
-# with header_col2:
-#     st.markdown("<div style='text-align: right; padding-top: 10px;'>🟢 <b>System:</b> <span style='color: #2EC4B6;'>Online</span></div>", unsafe_allow_html=True)
-
 st.markdown("<hr style='margin: 15px 0px; border-color: rgba(255,255,255,0.1);'>", unsafe_allow_html=True)
 
-# --- UPPER SECTION: CUSTOM DATASET UPLOADER ---
+
 with st.expander("Upload CSV Datasets", expanded=False):
     col_up1, col_up2, col_up3 = st.columns(3)
     
@@ -215,7 +209,6 @@ with st.expander("Upload CSV Datasets", expanded=False):
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Show alert banner if an automated fix was executed
 if st.session_state.remediation_alert:
     st.success(st.session_state.remediation_alert)
     st.session_state.remediation_alert = None
@@ -244,12 +237,10 @@ if data:
     raw_exceptions = data.get("exceptions", [])
     raw_metrics = data.get("metrics", {})
 
-    # Filter out already remediated orders dynamically
     active_exceptions = [
         ex for ex in raw_exceptions if ex["order_id"] not in st.session_state.resolved_orders
     ]
     
-    # Recalculate metrics based on live remaining queue
     total_exceptions = len(active_exceptions)
     total_discrepancy = sum(ex["discrepancy"] for ex in active_exceptions)
     # st.write("DATA:", data)
@@ -258,23 +249,20 @@ if data:
     total_processed = raw_metrics.get("total_processed",0)
     match_rate = round(((total_processed - total_exceptions) / total_processed) * 100, 2) if total_processed else 100.0
 
-    # Calculate throughput stats from raw metrics
+
     proc_time = raw_metrics.get("processing_time_sec", 0.1)
     throughput_eps = round(total_processed / proc_time, 1) if proc_time > 0 else total_processed
     measured_acc = raw_metrics.get("measured_accuracy", 98.4)
 
-    # --- TABS ---
     dash_tab, ai_tab, audit_tab = st.tabs([" EXECUTIVE DASHBOARD", " FIRA INVESTIGATOR", " AUDIT TRAIL"])
 
     with dash_tab:
         st.markdown("### 📈 Live Processing Metrics")
         
-        # --- ROW 1: Core Performance Indicators ---
         row1_col1, row1_col2, row1_col3 = st.columns(3)
         row1_col1.metric("Records Processed", f"{total_processed:,}", delta="Batch Sync Complete")
         row1_col2.metric("Match Rate",f"{match_rate}%",delta="Target: 95%+" if match_rate < 95 else "Above target")
         row1_col3.metric("Active Exceptions", f"{total_exceptions:,}", delta=f"-{len(st.session_state.resolved_orders)} Resolved" if st.session_state.resolved_orders else "Action Required", delta_color="inverse")
-        # --- ROW 2: Financial Risk & Verification Metrics ---
         row2_col1, row2_col2, row2_col3 = st.columns(3)
         row2_col1.metric("Capital at Risk", f"₹{total_discrepancy:,.2f}", delta="Pending Action", delta_color="inverse")
         row2_col2.metric("Throughput Speed", f"{throughput_eps} rec/s", delta=f"{proc_time}s total batch execution")
@@ -383,13 +371,10 @@ if data:
             if logs:
                 df_logs = pd.DataFrame(logs)
                 
-                # Strict cleanup: Drop nulls, empty rows, and rows where all elements are blank/NaN/None
                 df_logs = df_logs.dropna(how="all")
                 df_logs = df_logs.loc[(df_logs != "").any(axis=1)]
                 if "order_id" in df_logs.columns:
                     df_logs = df_logs[df_logs["order_id"].notna() & (df_logs["order_id"].astype(str).str.strip() != "")]
-                
-                # Dynamically set height to match the exact number of active rows so no extra blank rows display
                 dynamic_height = max(150, min(400, (len(df_logs) + 1) * 35))
 
                 if not df_logs.empty:
