@@ -13,13 +13,14 @@ It performs deterministic financial reconciliation, identifies discrepancies, in
 ![FIRA Dashboard](screenshots/executive.png)
 
 ![FIRA Dashboard](screenshots/executive2.png)
-##  What FIRA Solves
 
 ### Investigator Dashboard
 ![FIRA Dashboard](screenshots/investigator.png)
 
 ### Audit Dashboard
 ![FIRA Dashboard](screenshots/audit.png)
+
+##  What FIRA Solves
 
 Finance teams often need to verify whether the same transaction is correctly represented across multiple financial systems.
 
@@ -294,38 +295,6 @@ This approach keeps objective financial checks reproducible while using AI where
 | Database | SQLite |
 | Communication | REST / HTTP |
 | Language | Python 3.10+ |
-
----
-
-#  Project Structure
-
-```text
-fira-financial-agent/
-│
-├── backend/
-│   ├── main.py
-│   ├── audit_db.py
-│   ├── generator.py
-│   ├── llm_reasoner.py
-│   ├── models.py
-│   ├── normalizer.py
-│   └── reconciler.py
-│
-├── frontend/
-│   └── app.py
-│  
-│
-├── data/
-│   ├── bank_settelments.csv
-│   ├── merchant_orders.csv
-│   └── payment_records.csv
-│
-├── .env.example
-├── .gitignore
-├── requirements.txt
-├── README.md
-└── LICENSE
-```
 
 ---
 
